@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
 import logo from '../../assets/images/webdemy-logo.jpg';
 import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
+import { AppContext } from '../../context/AppContext';
 
 const Navbar = () => {
+  const {navigate, isEducator} = useContext(AppContext)
   const location = useLocation();
   const isCourseListPage = location.pathname.includes('/course-list');
 
@@ -19,7 +21,7 @@ const Navbar = () => {
     >
       {/* Logo */}
       <Link to="/">
-        <img
+        <img onClick={() => navigate('/')}
           src={logo}
           alt="WebDemy Logo"
           className="w-24 lg:w-32 object-contain cursor-pointer"
@@ -30,8 +32,8 @@ const Navbar = () => {
       <div className="hidden md:flex items-center gap-6 text-gray-700 font-medium">
         {user && (
           <>
-            <button className="hover:text-blue-600 transition-colors duration-200">
-              Become Educator
+            <button onClick={() => {navigate('/educator')}} className="hover:text-blue-600 transition-colors duration-200">
+              {isEducator ? 'Educator Dashboard' : 'Become Educator' }
             </button>
             <div className="h-5 border-l border-gray-400 mx-2" />
             <Link
@@ -59,8 +61,8 @@ const Navbar = () => {
       <div className="md:hidden flex items-center gap-3 text-gray-700">
         {user && (
           <>
-            <button className="text-sm px-2 py-1 hover:text-blue-600 transition-colors duration-200">
-              Educator
+            <button onClick={() => {navigate('/educator')}} className="hover:text-blue-600 transition-colors duration-200">
+              {isEducator ? 'Educator Dashboard' : 'Become Educator' }
             </button>
             <div className="h-5 border-l border-gray-400" />
             <Link
