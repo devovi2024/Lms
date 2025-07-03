@@ -1,0 +1,28 @@
+
+/* Custom keyframes: Slide In, Pause, Slide Out */
+@keyframes loopSlide {
+  0% {
+    transform: translateX(-60px);
+    opacity: 0;
+  }
+  20% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+}
+
+.animate-loop-slide {
+  animation: loopSlide 5s ease-in-out infinite;
+}
