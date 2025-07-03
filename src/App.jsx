@@ -8,7 +8,7 @@ import MyEnrollments from './pages/student/MyEnrollments';
 import Player from './pages/student/Player';
 import Loading from './components/students/Loading';
 
-import Educator from './pages/educator/Educator'; 
+import Educator from './pages/educator/Educator';
 import Dashboard from './pages/educator/Dashboard';
 import AddCourse from './pages/educator/AddCourse';
 import MyCourses from './pages/educator/MyCourses';
@@ -17,14 +17,15 @@ import StudentsEnrolled from './pages/educator/StudentsEnrolled';
 import Navbar from './components/students/Navbar';
 
 const App = () => {
-  const location = useLocation();
-  const isEducatorRoute = location.pathname.startsWith('/educator');
+  const { pathname } = useLocation();
+  const isEducatorRoute = pathname.startsWith('/educator');
 
   return (
-    <div className="text-default min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-default">
       {!isEducatorRoute && <Navbar />}
 
       <Routes>
+        {/* Student Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/course-list" element={<CoursesList />} />
         <Route path="/course-list/:input" element={<CoursesList />} />
@@ -33,6 +34,7 @@ const App = () => {
         <Route path="/player/:courseId" element={<Player />} />
         <Route path="/loading/:path" element={<Loading />} />
 
+        {/* Educator Routes */}
         <Route path="/educator" element={<Educator />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-course" element={<AddCourse />} />

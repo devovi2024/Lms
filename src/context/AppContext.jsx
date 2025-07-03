@@ -6,11 +6,11 @@ export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
     const currency = import.meta.env.VITE_CURRENCY || '$';
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [allCourses, setAllCourses] = useState([]);
     const [isEducator, setIsEducator] = useState(true);
 
-    // fetch courses 
+    // Load courses from your local dummyCourse.js
     const fetchAllCourses = async () => {
         setAllCourses(courses);
     };
@@ -22,7 +22,8 @@ export const AppContextProvider = (props) => {
     const value = {
         currency,
         allCourses,
-        isEducator, setIsEducator
+        isEducator,
+        setIsEducator
     };
 
     return (

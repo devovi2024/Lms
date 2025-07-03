@@ -10,16 +10,25 @@ const getOpacity = (index) => {
 
 const CourseCard = ({ course }) => {
   const { currency = '$' } = useContext(AppContext);
-  const { title, author, image, rating, reviews, price, discount } = course;
+
+  const {
+    title,
+    instructor,
+    image,
+    rating,
+    reviews,
+    price,
+    discount = 0,
+    course_id,
+  } = course;
+
   const finalPrice = (price - (price * discount) / 100).toFixed(2);
 
   return (
     <Link
-      to={`/course/${course._id || course.id}`}
-      onClick={() => {
-        window.scrollTo(0, 0);
-      }}
-      className="block" 
+      to={`/course/${course_id}`}
+      onClick={() => window.scrollTo(0, 0)}
+      className="block"
     >
       <div className="bg-white rounded-xl shadow-sm border hover:shadow-md transition duration-300 flex flex-col">
         <img
@@ -29,10 +38,13 @@ const CourseCard = ({ course }) => {
         />
 
         <div className="p-4 flex flex-col items-start justify-between flex-1 text-left gap-1">
-          <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2">{title}</h3>
-          <p className="text-sm text-gray-500">{author}</p>
+          <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2">
+            {title}
+          </h3>
 
-          <div className="flex items-center">
+          <p className="text-sm text-gray-500">{instructor}</p>
+
+          <div className="flex items-center mt-1">
             <div className="flex items-center gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <FaStar
