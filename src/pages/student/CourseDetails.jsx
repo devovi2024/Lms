@@ -4,11 +4,22 @@ import { AppContext } from "../../context/AppContext";
 import { FaStar, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import humanizeDuration from "humanize-duration";
 
+const extractVideoId = (url) => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.searchParams.get("v");
+  } catch (err) {
+    return null;
+  }
+};
+
 const CourseDetails = () => {
   const { id } = useParams();
   const { allCourses } = useContext(AppContext);
   const [course, setCourse] = useState(null);
   const [activeChapter, setActiveChapter] = useState(null);
+  const [isAlreadyEnrolled, seIsAlreadyEnrolled] = useState(true);
+  const [playerData, setPlayerData] = useState(null);
 
   useEffect(() => {
     const foundCourse = allCourses?.find((c) => c.course_id === id);
@@ -53,7 +64,7 @@ const CourseDetails = () => {
   const {
     title,
     instructor,
-    image,
+    thumbnail,
     price,
     discount = 0,
     rating,
@@ -67,77 +78,95 @@ const CourseDetails = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 p-8 max-w-7xl mx-auto">
-      
+
       {/* Left Panel – Curriculum */}
-<div className="bg-white p-6 rounded-2xl shadow-xl">
-  <h3 className="text-xl font-bold mb-4">Course Curriculum</h3>
-  <div className="space-y-4">
-    {chapters.map((chapter, index) => {
-      const isOpen = activeChapter === index;
-      const totalChapterDuration = chapter.chapterContent?.reduce(
-        (sum, lec) => sum + (lec.lectureDuration || 0),
-        0
-      );
+      <div className="bg-white p-6 rounded-2xl shadow-xl">
+        <h3 className="text-xl font-bold mb-4">Course Curriculum</h3>
+        <div className="space-y-4">
+          {chapters.map((chapter, index) => {
+            const isOpen = activeChapter === index;
+            const totalChapterDuration = chapter.chapterContent?.reduce(
+              (sum, lec) => sum + (lec.lectureDuration || 0),
+              0
+            );
 
-      return (
-        <div key={index} className="border rounded-lg">
-          {/* Chapter Header */}
-          <div
-            onClick={() => toggleChapter(index)}
-            className="flex justify-between items-center px-4 py-3 cursor-pointer bg-gray-100 hover:bg-gray-200"
-          >
-            <div className="font-semibold">{chapter.chapterTitle}</div>
-            
-            <div className="flex gap-2">
-                              {/* Chapter Summary */}
-              <div className="  text-sm text-gray-600 italic">
-                 {chapter.chapterContent?.length || 0} lectures
-              </div>
-            <div className="flex items-center space-x-2 text-gray-500 text-sm">
-              <span>{formatDuration(totalChapterDuration)}</span>
-              {isOpen ? <FaChevronUp /> : <FaChevronDown />}
-            </div>
-            </div>
-          </div>
-
-          {/* Lecture List */}
-          {isOpen && (
-            <div className="divide-y">
-              {chapter.chapterContent?.map((lecture, lecIndex) => (
+            return (
+              <div key={index} className="border rounded-lg">
+                {/* Chapter Header */}
                 <div
-                  key={lecIndex}
-                  className="px-4 py-2 flex justify-between items-center text-sm"
+                  onClick={() => toggleChapter(index)}
+                  className="flex justify-between items-center px-4 py-3 cursor-pointer bg-gray-100 hover:bg-gray-200"
                 >
-                    
-                  {/* Lecture Title */}
-                  <span>{lecture.lectureTitle}</span>
-                  
-
-                  {/* Duration & Preview Button */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500">
-                      {lecture.lectureDuration} min
-                    </span>
-                    {lecture.isFreePreview && (
-                      <button className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-md font-medium">
-                        Preview
-                      </button>
-                    )}
+                  <div className="font-semibold">{chapter.chapterTitle}</div>
+                  <div className="flex gap-2 text-sm text-gray-600">
+                    <div className="italic">{chapter.chapterContent?.length || 0} lectures</div>
+                    <div className="flex items-center space-x-2">
+                      <span>{formatDuration(totalChapterDuration)}</span>
+                      {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    </div>
                   </div>
                 </div>
-              ))}
 
-            </div>
-          )}
+                {/* Lecture List */}
+                {isOpen && (
+                  <div className="divide-y">
+                    {chapter.chapterContent?.map((lecture, lecIndex) => (
+                      <div
+                        key={lecIndex}
+                        className="px-4 py-2 flex justify-between items-center text-sm"
+                      >
+                        <span>{lecture.lectureTitle}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">
+                            {lecture.lectureDuration} min
+                          </span>
+                          {lecture.isFreePreview && (
+                            <button
+                              onClick={() =>
+                                setPlayerData({
+                                  videoId: extractVideoId(lecture.videoUrl),
+                                })
+                              }
+                              className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-md font-medium"
+                            >
+                              Preview
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-      );
-    })}
-  </div>
-</div>
-
+      </div>
 
       {/* Right Panel – Course Info */}
       <div className="bg-white p-8 rounded-2xl shadow-xl space-y-6">
+
+        {/* Video Player Section */}
+        <div className="rounded-xl overflow-hidden">
+          {playerData?.videoId ? (
+            <div className="aspect-w-16 aspect-h-9">
+              <iframe
+                className="w-full h-64 rounded-xl"
+                src={`https://www.youtube.com/embed/${playerData.videoId}`}
+                title="Preview Video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          ) : (
+            <img
+              src={thumbnail || "https://via.placeholder.com/600x300"}
+              alt={title}
+              className="w-full h-48 object-cover rounded-xl"
+            />
+          )}
+        </div>
+
         <h2 className="text-2xl font-bold">{title}</h2>
         <p className="text-gray-600">By {instructor}</p>
 
@@ -187,7 +216,7 @@ const CourseDetails = () => {
         </div>
 
         <button className="w-full py-3 mt-4 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">
-          Enroll Now
+          {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
         </button>
       </div>
     </div>

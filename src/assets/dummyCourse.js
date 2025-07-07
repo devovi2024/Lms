@@ -34,7 +34,7 @@ const courses = [
           {
             lectureTitle: "Course Overview & Tools Setup",
             lectureDuration: 12,
-            videoUrl: "https://www.youtube.com/watch?v=tools-setup",
+             videoUrl: "https://www.youtube.com/watch?v=aSxhWTEDJOs",
             resources: ["setup-guide.pdf"],
             isFreePreview: true,
             lectureType: "video",
@@ -47,7 +47,7 @@ const courses = [
           {
             lectureTitle: "What is the MERN Stack?",
             lectureDuration: 8,
-            videoUrl: "https://www.youtube.com/watch?v=mern-intro",
+            videoUrl: "https://www.youtube.com/watch?v=98BzS5Oz5E4",
             resources: [],
             isFreePreview: true,
             lectureType: "video",
@@ -254,7 +254,7 @@ const courses = [
           {
             lectureTitle: "Deploy to Render & Netlify",
             lectureDuration: 15,
-            videoUrl: "https://www.youtube.com/watch?v=deploy-fullstack",
+            videoUrl: "https://www.youtube.com/watch?v=lnSolgXHJGY",
             resources: ["deployment-checklist.pdf"],
             isFreePreview: false,
             lectureType: "video",
@@ -267,7 +267,7 @@ const courses = [
           {
             lectureTitle: "Common Debugging Tips",
             lectureDuration: 10,
-            videoUrl: "https://www.youtube.com/watch?v=debug-tips",
+            videoUrl: "https://www.youtube.com/watch?v=lnSolgXHJGY",
             resources: [],
             isFreePreview: false,
             lectureType: "quiz",
