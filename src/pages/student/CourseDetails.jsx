@@ -4,11 +4,12 @@ import { AppContext } from "../../context/AppContext";
 import { FaStar, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import humanizeDuration from "humanize-duration";
 
+// Utility to extract YouTube video ID
 const extractVideoId = (url) => {
   try {
     const urlObj = new URL(url);
     return urlObj.searchParams.get("v");
-  } catch (err) {
+  } catch {
     return null;
   }
 };
@@ -18,7 +19,7 @@ const CourseDetails = () => {
   const { allCourses } = useContext(AppContext);
   const [course, setCourse] = useState(null);
   const [activeChapter, setActiveChapter] = useState(null);
-  const [isAlreadyEnrolled, seIsAlreadyEnrolled] = useState(true);
+  const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(true);
   const [playerData, setPlayerData] = useState(null);
 
   useEffect(() => {
@@ -30,33 +31,32 @@ const CourseDetails = () => {
     setActiveChapter(activeChapter === index ? null : index);
   };
 
-  const formatDuration = (minutes) => {
-    return humanizeDuration(minutes * 60000, {
-      units: ["h", "m"],
-      round: true,
-    });
-  };
+  const formatDuration = (minutes) =>
+    humanizeDuration(minutes * 60000, { units: ["h", "m"], round: true });
 
-  const calculateCourseDuration = (course) => {
-    let totalMinutes = 0;
-    course.chapters?.forEach((chapter) => {
-      chapter.chapterContent?.forEach((lecture) => {
-        totalMinutes += lecture.lectureDuration || 0;
-      });
-    });
-    return formatDuration(totalMinutes);
-  };
+  const calculateCourseDuration = (course) =>
+    formatDuration(
+      course.chapters?.reduce(
+        (total, ch) =>
+          total +
+          (ch.chapterContent?.reduce(
+            (sum, lec) => sum + (lec.lectureDuration || 0),
+            0
+          ) || 0),
+        0
+      )
+    );
 
-  const calculateNoOfLectures = (course) => {
-    return course.chapters?.reduce((sum, chapter) => {
-      return sum + (chapter.chapterContent?.length || 0);
-    }, 0);
-  };
+  const calculateNoOfLectures = (course) =>
+    course.chapters?.reduce(
+      (sum, ch) => sum + (ch.chapterContent?.length || 0),
+      0
+    );
 
   if (!course) {
     return (
       <div className="flex items-center justify-center min-h-screen text-gray-500">
-        Loading...
+        Loading course details...
       </div>
     );
   }
@@ -77,46 +77,41 @@ const CourseDetails = () => {
   const finalPrice = ((price * (100 - discount)) / 100).toFixed(2);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 p-8 max-w-7xl mx-auto">
-
-      {/* Left Panel – Curriculum */}
-      <div className="bg-white p-6 rounded-2xl shadow-xl">
-        <h3 className="text-xl font-bold mb-4">Course Curriculum</h3>
+    <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
+      {/* Left: Curriculum */}
+      <div className="bg-white rounded-2xl shadow-lg p-6">
+        <h3 className="text-xl font-bold mb-5 text-gray-800">Course Curriculum</h3>
         <div className="space-y-4">
           {chapters.map((chapter, index) => {
             const isOpen = activeChapter === index;
-            const totalChapterDuration = chapter.chapterContent?.reduce(
+            const chapterDuration = chapter.chapterContent?.reduce(
               (sum, lec) => sum + (lec.lectureDuration || 0),
               0
             );
 
             return (
-              <div key={index} className="border rounded-lg">
-                {/* Chapter Header */}
+              <div key={index} className="border rounded-xl">
                 <div
                   onClick={() => toggleChapter(index)}
-                  className="flex justify-between items-center px-4 py-3 cursor-pointer bg-gray-100 hover:bg-gray-200"
+                  className="flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 cursor-pointer rounded-t-xl"
                 >
-                  <div className="font-semibold">{chapter.chapterTitle}</div>
-                  <div className="flex gap-2 text-sm text-gray-600">
-                    <div className="italic">{chapter.chapterContent?.length || 0} lectures</div>
-                    <div className="flex items-center space-x-2">
-                      <span>{formatDuration(totalChapterDuration)}</span>
-                      {isOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    </div>
+                  <div className="font-semibold text-gray-700">{chapter.chapterTitle}</div>
+                  <div className="flex gap-3 text-sm text-gray-500 items-center">
+                    <span>{chapter.chapterContent?.length || 0} lectures</span>
+                    <span>{formatDuration(chapterDuration)}</span>
+                    {isOpen ? <FaChevronUp /> : <FaChevronDown />}
                   </div>
                 </div>
 
-                {/* Lecture List */}
                 {isOpen && (
                   <div className="divide-y">
                     {chapter.chapterContent?.map((lecture, lecIndex) => (
                       <div
                         key={lecIndex}
-                        className="px-4 py-2 flex justify-between items-center text-sm"
+                        className="flex justify-between items-center px-4 py-2 text-sm"
                       >
-                        <span>{lecture.lectureTitle}</span>
-                        <div className="flex items-center gap-2">
+                        <span className="text-gray-800">{lecture.lectureTitle}</span>
+                        <div className="flex gap-2 items-center">
                           <span className="text-gray-500">
                             {lecture.lectureDuration} min
                           </span>
@@ -125,9 +120,10 @@ const CourseDetails = () => {
                               onClick={() =>
                                 setPlayerData({
                                   videoId: extractVideoId(lecture.videoUrl),
+                                  title: lecture.lectureTitle,
                                 })
                               }
-                              className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-md font-medium"
+                              className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded font-medium"
                             >
                               Preview
                             </button>
@@ -143,34 +139,30 @@ const CourseDetails = () => {
         </div>
       </div>
 
-      {/* Right Panel – Course Info */}
-      <div className="bg-white p-8 rounded-2xl shadow-xl space-y-6">
-
-        {/* Video Player Section */}
-        <div className="rounded-xl overflow-hidden">
+      {/* Right: Course Info */}
+      <div className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+        {/* Video/Thumbnail */}
+        <div className="rounded-xl overflow-hidden shadow-md">
           {playerData?.videoId ? (
-            <div className="aspect-w-16 aspect-h-9">
-              <iframe
-                className="w-full h-64 rounded-xl"
-                src={`https://www.youtube.com/embed/${playerData.videoId}`}
-                title="Preview Video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
+            <iframe
+              src={`https://www.youtube.com/embed/${playerData.videoId}`}
+              className="w-full h-64 rounded-xl"
+              title="Lecture Preview"
+              allowFullScreen
+            />
           ) : (
             <img
               src={thumbnail || "https://via.placeholder.com/600x300"}
               alt={title}
-              className="w-full h-48 object-cover rounded-xl"
+              className="w-full h-64 object-cover rounded-xl"
             />
           )}
         </div>
 
-        <h2 className="text-2xl font-bold">{title}</h2>
-        <p className="text-gray-600">By {instructor}</p>
+        <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
+        <p className="text-gray-600">Instructor: {instructor}</p>
 
-        <div className="text-gray-700 space-y-2 text-sm">
+        <div className="text-sm text-gray-700 space-y-1">
           <div>📅 {daysLeft} days left</div>
           <div>⏰ {calculateCourseDuration(course)}</div>
           <div>📚 {calculateNoOfLectures(course)} lectures</div>
@@ -179,33 +171,30 @@ const CourseDetails = () => {
         <div className="flex items-center space-x-3">
           {discount > 0 && (
             <>
-              <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm font-bold">
+              <span className="bg-green-100 text-green-700 text-sm px-2 py-1 rounded font-bold">
                 {discount}% OFF
               </span>
-              <span className="line-through text-gray-400">${price.toFixed(2)}</span>
+              <span className="line-through text-gray-400 text-sm">
+                ${price.toFixed(2)}
+              </span>
             </>
           )}
           <span className="text-3xl font-extrabold text-indigo-600">${finalPrice}</span>
         </div>
 
-        <div className="flex items-center space-x-2 text-yellow-500">
+        <div className="flex items-center gap-2 text-yellow-500">
           {[...Array(5)].map((_, i) => (
-            <FaStar
-              key={i}
-              color={i < Math.round(rating) ? "#fbbf24" : "#e5e7eb"}
-            />
+            <FaStar key={i} color={i < Math.round(rating) ? "#fbbf24" : "#e5e7eb"} />
           ))}
-          <span className="text-gray-600 font-medium text-sm">
-            {rating.toFixed(1)} / 5
-          </span>
+          <span className="text-sm text-gray-600 font-medium">{rating.toFixed(1)} / 5</span>
         </div>
 
-        <p className="text-gray-600 text-sm">
+        <p className="text-sm text-gray-500">
           {students_enrolled.toLocaleString()} students enrolled
         </p>
 
         <div>
-          <h3 className="text-lg font-semibold">What you'll learn</h3>
+          <h3 className="text-lg font-semibold text-gray-800">What you'll learn</h3>
           <ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">
             {whatYouLearn.length > 0 ? (
               whatYouLearn.map((item, i) => <li key={i}>{item}</li>)
@@ -215,7 +204,7 @@ const CourseDetails = () => {
           </ul>
         </div>
 
-        <button className="w-full py-3 mt-4 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">
+        <button className="w-full py-3 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
           {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
         </button>
       </div>
