@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Home from './pages/student/Home';
@@ -6,7 +6,6 @@ import CoursesList from './pages/student/CoursesList';
 import CourseDetails from './pages/student/CourseDetails';
 import MyEnrollments from './pages/student/MyEnrollments';
 import Player from './pages/student/Player';
-import Loading from './components/students/Loading';
 
 import Educator from './pages/educator/Educator';
 import Dashboard from './pages/educator/Dashboard';
@@ -15,13 +14,25 @@ import MyCourses from './pages/educator/MyCourses';
 import StudentsEnrolled from './pages/educator/StudentsEnrolled';
 
 import Navbar from './components/students/Navbar';
+import Loading from './components/students/Loading';
 
 const App = () => {
   const { pathname } = useLocation();
   const isEducatorRoute = pathname.startsWith('/educator');
 
+  const [showLoading, setShowLoading] = useState(pathname === '/');
+
+  useEffect(() => {
+    if (pathname === '/') {
+      const timer = setTimeout(() => setShowLoading(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [pathname]);
+
   return (
     <div className="min-h-screen bg-white text-default">
+      {showLoading && <Loading />}
+
       {!isEducatorRoute && <Navbar />}
 
       <Routes>
@@ -32,7 +43,6 @@ const App = () => {
         <Route path="/course/:id" element={<CourseDetails />} />
         <Route path="/my-enrollments" element={<MyEnrollments />} />
         <Route path="/player/:courseId" element={<Player />} />
-        <Route path="/loading/:path" element={<Loading />} />
 
         {/* Educator Routes */}
         <Route path="/educator" element={<Educator />}>
