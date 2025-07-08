@@ -7,21 +7,24 @@ import Footer from '../../components/educator/Footer';
 const Educator = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Navbar always sticky on top */}
       <header className="sticky top-0 bg-white z-50 shadow-md">
         <EducatorNavbar />
       </header>
 
-      <div className="flex flex-1">
-        <div className="hidden md:block w-64 border-r bg-white shadow-sm">
-          <Sidebar />
-        </div>
+      {/* Content area */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar handles its own responsive visibility and positioning */}
+        <Sidebar />
 
-        <main className="flex-1 p-4 md:p-8">
+        {/* Main content: grow to fill available space */}
+        <main className="flex-1 overflow-auto p-4 md:p-8">
           <Outlet />
         </main>
       </div>
 
-      <Footer/>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

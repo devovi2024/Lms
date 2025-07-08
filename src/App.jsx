@@ -45,8 +45,8 @@ const App = () => {
         <Route path="/player/:courseId" element={<Player />} />
 
         {/* Educator Routes */}
-        <Route path="/" element={<Educator />}>
-          <Route path="/educator" element={<Dashboard />} />
+        <Route path="/educator" element={<Educator />}>
+          <Route index element={<Dashboard />} />
           <Route path="add-course" element={<AddCourse />} />
           <Route path="my-courses" element={<MyCourses />} />
           <Route path="student-enrolled" element={<StudentsEnrolled />} />
