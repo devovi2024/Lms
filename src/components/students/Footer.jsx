@@ -24,7 +24,7 @@ const Footer = () => {
 
         {/* Brand Section */}
         <div>
-          <h2 className="text-2xl font-bold text-white">Edemy</h2>
+          <h2 className="text-2xl font-bold text-white">WebDemy</h2>
           <p className="text-sm text-gray-400 mt-4">
             A platform for learners, dreamers, and doers. Start building your future today.
           </p>
@@ -75,7 +75,7 @@ const Footer = () => {
       </div>
 
       <div className="mt-10 border-t border-gray-800 pt-6 text-center text-xs text-gray-500">
-        © {new Date().getFullYear()} Edemy. All rights reserved. | <Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link>
+        © {new Date().getFullYear()} WebDemy. All rights reserved. | <Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link>
       </div>
     </footer>
   );
