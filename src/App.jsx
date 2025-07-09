@@ -12,7 +12,6 @@ import Dashboard from './pages/educator/Dashboard';
 import AddCourse from './pages/educator/AddCourse';
 import MyCourses from './pages/educator/MyCourses';
 import StudentsEnrolled from './pages/educator/StudentsEnrolled';
-
 import Navbar from './components/students/Navbar';
 import Loading from './components/students/Loading';
 
