@@ -5,12 +5,9 @@ import CourseSection from '../../components/students/CourseSection'
 import TestimonialsSection from '../../components/students/TestimonialsSection'
 import CallToAction from '../../components/students/CallToAction'
 import Footer from '../../components/students/Footer'
-import { Link } from 'react-router-dom'
-Link
 const Home = () => {
   return (
     <div>
-      <Link to='/doctors'>Doctors</Link>
       <Hero/>
       <Companies/>
       <CourseSection/>
